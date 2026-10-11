@@ -58,3 +58,33 @@ resource "aws_route_table_association" "public" {
   subnet_id      = aws_subnet.this[each.key].id
   route_table_id = aws_route_table.public.id
 }
+
+resource "aws_route_table" "private_app" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "conduit-private-app-rt"
+  }
+}
+
+resource "aws_route_table" "private_db" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "conduit-private-db-rt"
+  }
+}
+
+resource "aws_route_table_association" "private_app" {
+  for_each = toset(["app-a", "app-b"])
+
+  subnet_id      = aws_subnet.this[each.key].id
+  route_table_id = aws_route_table.private_app.id
+}
+
+resource "aws_route_table_association" "private_db" {
+  for_each = toset(["db-a", "db-b"])
+
+  subnet_id      = aws_subnet.this[each.key].id
+  route_table_id = aws_route_table.private_db.id
+}
